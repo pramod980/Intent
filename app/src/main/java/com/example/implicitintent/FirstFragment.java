@@ -1,6 +1,9 @@
 package com.example.implicitintent;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Intent;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.AlarmClock;
@@ -10,10 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.implicitintent.databinding.FragmentFirstBinding;
@@ -25,7 +31,9 @@ public class FirstFragment extends Fragment {
 private FragmentFirstBinding binding;
     private Button button;
     private EditText editText;
-
+    private ImageView imageView;
+    ActivityResultLauncher<String>photo;
+    ActivityResultLauncher<Intent>activityResultLauncher;
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -49,11 +57,19 @@ private FragmentFirstBinding binding;
         });
         button=view.findViewById(R.id.button);
         editText=view.findViewById(R.id.editText);
+        imageView=view.findViewById(R.id.imageView);
+        photo=registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+        @Override
+            public void onActivityResult(Uri result) {
+                imageView.setImageURI(result);
+          }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String url=editText.getText().toString();
-                Toast.makeText(getActivity(), url, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "search button work", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getActivity(), url, Toast.LENGTH_SHORT).show();
 
 
 
@@ -93,14 +109,10 @@ private FragmentFirstBinding binding;
                 //    startActivity(intent);
                 //}
 
+                //Select image from gallery Intent
+           photo.launch("image/*");
 
 
-
-                //Camera Intent
-                Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
-                }
 
             }
         });
@@ -108,8 +120,8 @@ private FragmentFirstBinding binding;
 
 @Override
     public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
+    super.onDestroyView();
+    binding = null;
+}
 
 }
